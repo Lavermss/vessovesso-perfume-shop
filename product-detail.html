@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 상세페이지</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{font-family:"Noto Sans KR";margin:0;background:#f7f7f7;color:#111;}
+    .container{max-width:1200px;margin:60px auto;padding:0 20px;display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+
+    .product-image{
+      width:100%;height:520px;background:#eee;border-radius:6px;
+      background-size:cover;background-position:center;
+    }
+
+    h1{font-size:26px;margin-bottom:6px;}
+    .info-sub{font-size:13px;color:#555;margin-bottom:20px;}
+
+    .original{font-size:16px;color:#999;text-decoration:line-through;margin-bottom:4px;}
+    .sale{font-size:22px;font-weight:700;color:#d64545;margin-bottom:12px;}
+    .sale span{color:#111;margin-left:10px;}
+
+    .line-box{border-top:1px solid #ddd;margin:20px 0;}
+
+    .qty-box{display:flex;align-items:center;width:160px;border:1px solid #ccc;margin:20px 0;}
+    .qty-box button{width:40px;height:40px;border:none;background:#fff;font-size:20px;cursor:pointer;}
+    .qty-box input{width:80px;text-align:center;border:none;font-size:16px;}
+
+    select{width:200px;padding:10px;}
+
+    .total{font-size:20px;font-weight:700;text-align:right;margin:20px 0;}
+
+    .btn-wrap{display:flex;gap:10px;margin-top:20px;}
+    .btn-wrap button{flex:1;padding:14px 0;font-size:16px;border-radius:4px;cursor:pointer;border:1px solid #333;}
+    .gift{background:#fff;}
+    .cart{background:#000;color:#fff;border:none;}
+    .buy{background:#0a5b46;color:#fff;border:none;}
+
+    /* 리뷰 박스 */
+    .review-section{
+      max-width:1200px;margin:60px auto;background:#fff;padding:30px 20px;
+      border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.05);
+    }
+    .review-title{font-size:22px;font-weight:700;margin-bottom:20px;}
+    .review-item{border-bottom:1px solid #eee;padding:16px 0;}
+    .review-name{font-weight:700;margin-bottom:4px;}
+    .stars{color:#f5b703;font-size:18px;margin-bottom:6px;}
+    .review-text{font-size:14px;color:#555;margin-bottom:8px;}
+
+    /* 리뷰 작성 */
+    .review-form{margin-top:30px;padding:20px;background:#fafafa;border-radius:8px;}
+    .review-form input, .review-form textarea, .review-form select{
+      width:100%;padding:10px;margin-bottom:12px;border:1px solid #ccc;border-radius:4px;font-size:14px;
+    }
+    .review-form button{
+      width:100%;padding:12px;background:#111;color:#fff;border:none;border-radius:4px;font-size:15px;cursor:pointer;
+    }
+
+    @media(max-width:768px){.container{grid-template-columns:1fr;}}
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div>
+    <div class="product-image" id="img"></div>
+
+    <!--
+      ※ 이미지 파일 규칙 (화면에 출력되지 않음)
+      /images/product/item{번호}.jpg
+      예: item1.jpg, item2.jpg, item3.jpg ...
+    -->
+  </div>
+
+  <div>
+    <p class="info-sub">향수 제품</p>
+    <h1 id="name"></h1>
+
+    <p class="original" id="original"></p>
+    <p class="sale" id="sale"></p>
+
+    <div class="line-box"></div>
+
+    <p>혜택안내: <span id="benefit"></span>P 적립</p>
+    <p>배송비: 2,500원 (3만원 이상 무료배송)</p>
+
+    <div class="line-box"></div>
+
+    <p>구매수량</p>
+    <div class="qty-box">
+      <button onclick="qtyChange(-1)">−</button>
+      <input type="text" id="qty" value="1" readonly>
+      <button onclick="qtyChange(1)">+</button>
+    </div>
+
+    <p>쇼핑백</p>
+    <select>
+      <option>선택</option>
+      <option>포함</option>
+      <option>제외</option>
+    </select>
+
+    <div class="total" id="total">0원</div>
+
+    <div class="btn-wrap">
+      <button class="gift">선물하기</button>
+      <button class="cart">장바구니</button>
+      <button class="buy">구매하기</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- 리뷰 영역 -->
+<div class="review-section">
+  <div class="review-title">고객 리뷰</div>
+
+  <div id="reviewList">
+
+    <div class="review-item">
+      <div class="review-name">A씨</div>
+      <div class="stars">★★★★★</div>
+      <div class="review-text">잔잔한 머스크와 플로럴이 조화를 이루어 은근하게 오래갑니다.</div>
+    </div>
+
+    <div class="review-item">
+      <div class="review-name">B씨</div>
+      <div class="stars">★★★★☆</div>
+      <div class="review-text">너무 강하지 않고 데일리로 쓰기 좋습니다. 잔향이 특히 매력적이에요.</div>
+    </div>
+
+    <div class="review-item">
+      <div class="review-name">C씨</div>
+      <div class="stars">★★★★★</div>
+      <div class="review-text">최근 사용한 향수 중 가장 만족도가 높습니다. 친구도 따라 샀어요.</div>
+    </div>
+
+    <div class="review-item">
+      <div class="review-name">D씨</div>
+      <div class="stars">★★★★☆</div>
+      <div class="review-text">은은한 우디 향이 기분을 좋게 합니다. 지속력도 꽤 괜찮아요.</div>
+    </div>
+
+  </div>
+
+  <!-- 리뷰 작성 폼 -->
+  <div class="review-form">
+    <h3>리뷰 작성하기</h3>
+
+    <input type="text" id="reviewName" placeholder="이름을 입력하세요" />
+
+    <select id="reviewStar">
+      <option value="5">★★★★★ (5점)</option>
+      <option value="4">★★★★☆ (4점)</option>
+      <option value="3">★★★☆☆ (3점)</option>
+      <option value="2">★★☆☆☆ (2점)</option>
+      <option value="1">★☆☆☆☆ (1점)</option>
+    </select>
+
+    <textarea id="reviewText" rows="4" placeholder="리뷰 내용을 입력하세요"></textarea>
+
+    <button onclick="addReview()">리뷰 등록</button>
+  </div>
+
+</div>
+
+
+<script>
+/* 상품 데이터 */
+const data = {
+  1:{name:"VessoVesso 시그니처 오 드 퍼퓸", original:78000, sale:70200, rate:10},
+  2:{name:"포레스트 머스크 블렌드", original:69000, sale:69000, rate:0},
+  3:{name:"화이트 플로럴 오 드 퍼퓸", original:58000, sale:58000, rate:0},
+  4:{name:"시트러스 우디 노트", original:62000, sale:49600, rate:20},
+  5:{name:"앰버 버치 스페셜 에디션", original:80000, sale:72000, rate:10},
+  6:{name:"그린 피그먼트 오 드 퍼퓸", original:57000, sale:57000, rate:0},
+  7:{name:"어반 머스크 50ml", original:48000, sale:48000, rate:0},
+  8:{name:"샌달우드 크림 스킨 향", original:44000, sale:44000, rate:0},
+  9:{name:"오션 딥 블루 오 드 퍼퓸", original:52000, sale:52000, rate:0},
+ 10:{name:"스파이시 로즈 50ml", original:61000, sale:51850, rate:15},
+ 11:{name:"베르가못 크러쉬 30ml", original:38000, sale:38000, rate:0},
+ 12:{name:"스위트 라일락 프레쉬 오 드 퍼퓸", original:42000, sale:42000, rate:0}
+};
+
+
+/* URL 파라미터 */
+const params = new URLSearchParams(location.search);
+const item = params.get("item");
+const p = data[item];
+
+
+document.getElementById("img").style.backgroundImage =
+  `url('./images/item${item}.png')`;
+
+/* 제품명 */
+document.getElementById("name").textContent = p.name;
+
+/* 가격 표시 */
+if(p.rate > 0){
+  document.getElementById("original").style.display = "block";
+  document.getElementById("original").textContent = p.original.toLocaleString()+"원";
+  document.getElementById("sale").innerHTML = `${p.rate}% <span>${p.sale.toLocaleString()}원</span>`;
+} else {
+  document.getElementById("original").style.display = "none";
+  document.getElementById("sale").textContent = p.sale.toLocaleString()+"원";
+}
+
+/* 적립 포인트 */
+document.getElementById("benefit").textContent = Math.floor(p.sale * 0.01);
+
+/* 총액 초기값 */
+document.getElementById("total").textContent = p.sale.toLocaleString()+"원";
+
+/* 수량 변경 */
+const price = p.sale;
+function qtyChange(n){
+  let q = parseInt(document.getElementById("qty").value) + n;
+  if(q < 1) q = 1;
+  document.getElementById("qty").value = q;
+  document.getElementById("total").textContent = (q * price).toLocaleString()+"원";
+}
+
+
+/* 리뷰 작성 기능 */
+function addReview(){
+  const name = document.getElementById("reviewName").value.trim();
+  const star = document.getElementById("reviewStar").value;
+  const text = document.getElementById("reviewText").value.trim();
+
+  if(!name || !text){
+    alert("이름과 리뷰 내용을 입력해주세요.");
+    return;
+  }
+
+  const newReview = `
+    <div class="review-item">
+      <div class="review-name">${name}</div>
+      <div class="stars">${"★".repeat(star)}${"☆".repeat(5-star)}</div>
+      <div class="review-text">${text}</div>
+    </div>
+  `;
+
+  document.getElementById("reviewList").insertAdjacentHTML("beforeend", newReview);
+
+  document.getElementById("reviewName").value = "";
+  document.getElementById("reviewText").value = "";
+}
+
+
+/* 구매하기 버튼 기능 */
+document.querySelector(".buy").addEventListener("click", function(){
+  alert("구매가 완료되었습니다.");
+  location.href = "index.html";  
+});
+</script>
+
+</body>
+</html>

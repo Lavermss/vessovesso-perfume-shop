@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>VessoVesso</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --header-height: 72px;
+      --max-width: 1200px;
+      --accent: #111;
+      --gray: #777;
+      --bg-light: #f5f5f5;
+      --border-color: #e5e5e5;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #111;
+      background: #fff;
+      line-height: 1.5;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    ul, li { list-style: none; }
+    img { max-width: 100%; display: block; }
+
+    /* HEADER */
+    .header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-height);
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      z-index: 1000;
+    }
+
+    .header-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      height: 100%;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+
+    .nav > ul {
+      display: flex;
+      gap: 32px;
+      font-size: 15px;
+    }
+
+    .menu-item {
+      position: relative;
+      cursor: pointer;
+      padding: 8px 0;
+    }
+
+    .icons {
+      display: flex;
+      gap: 16px;
+      font-size: 14px;
+      align-items: center;
+    }
+
+    .icons span { cursor: pointer; }
+
+    /* MEGA MENU */
+    .mega {
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      transform: translateX(-50%) translateY(10px);
+      width: 100vw;
+      max-width: 960px;
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 4px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 32px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      z-index: 900;
+    }
+
+    .menu-item:hover > .mega {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .mega h4 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #00997d;
+    }
+
+    .mega p {
+      font-size: 13px;
+      margin-bottom: 6px;
+      color: #444;
+      cursor: pointer;
+    }
+
+    .mega p:hover { text-decoration: underline; }
+
+    /* SEARCH OVERLAY */
+    .search-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255,255,255,0.97);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 120px;
+      transition: opacity 0.25s ease;
+      z-index: 950;
+    }
+
+    .search-overlay.open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .search-box {
+      width: min(720px, 90vw);
+      border-bottom: 1px solid #000;
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 0;
+      font-size: 18px;
+      border: none;
+      outline: none;
+      background: transparent;
+    }
+
+    .close-search {
+      position: absolute;
+      right: 0;
+      top: -40px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .search-contents {
+      width: min(720px, 90vw);
+      display: flex;
+      gap: 48px;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .search-contents h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .search-contents ol { padding-left: 20px; }
+
+    /* MAIN */
+    main { margin-top: var(--header-height); }
+
+    /* MAIN SLIDER */
+    .main-slider {
+      position: relative;
+      overflow: hidden;
+      background: #f6f2ea;
+      height: min(540px, 70vh);
+    }
+
+    .slides {
+      display: flex;
+      height: 100%;
+      transition: transform 0.8s ease;
+    }
+
+    .slide {
+      min-width: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0,1.3fr);
+      align-items: center;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 50px 24px;
+      gap: 40px;
+    }
+
+    .text-area .date {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .text-area h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .text-area .desc {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 8px 18px;
+      font-size: 13px;
+      border: 1px solid #333;
+      cursor: pointer;
+    }
+
+        /* ★★★ 메인 배너 이미지 공통 컨테이너 ★★★ */
+        .hero-image {
+      width: 100%;
+      height: 100%;
+      min-height: 260px;
+      border-radius: 4px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+        
+  
+
+    /* ★★★ 각 슬라이드별 배경 이미지 지정 위치 ★★★ */
+    .slide:nth-child(1) .hero-image {
+      /* ▼ 1번 메인 배너 이미지 넣는 곳 ▼ */
+       background-image: url("./images/slide1.png");
+       
+    }
+    .slide:nth-child(2) .hero-image {
+      /* ▼ 2번 메인 배너 이미지 넣는 곳 ▼ */
+      background-image: url("./images/slide2.png");
+    }
+    .slide:nth-child(3) .hero-image {
+      /* ▼ 3번 메인 배너 이미지 넣는 곳 ▼ */
+      background-image: url("./images/slide3.png");
+    }
+    .slide:nth-child(4) .hero-image {
+      /* ▼ 4번 메인 배너 이미지 넣는 곳 ▼ */
+      background-image: url("./images/slide4.png");
+    }
+
+    .arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+      background: rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      user-select: none;
+      z-index: 20;
+    }
+    .arrow.left { left: 16px; }
+    .arrow.right { right: 16px; }
+
+    /* BEST & NEW */
+    .best-new {
+      max-width: var(--max-width);
+      margin: 80px auto;
+      padding: 0 24px;
+      position: relative;
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 24px;
+    }
+
+    .section-title h2 {
+      font-size: 20px;
+      letter-spacing: 0.08em;
+    }
+
+    .section-title a {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .product-slider-wrapper {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-track {
+      display: flex;
+      gap: 24px;
+      transition: transform 0.6s ease;
+    }
+
+    .product {
+      flex: 0 0 calc(25% - 18px); /* PC: 4개 */
+      background: #fafafa;
+      border-radius: 4px;
+      border: 1px solid #f0f0f0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .product-top {
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ★★★ 상품 이미지 공통 컨테이너 ★★★ */
+    .product-img {
+      width: 100%;
+      padding-top: 100%;
+      background-size: cover;
+      background-position: center;
+      background-color: #f0f0f0; /* 이미지 없을 때 회색 */
+      transition: transform 0.35s ease;
+    }
+
+    /* ★★★ 각 상품별 이미지 넣는 위치 (12개) ★★★ */
+.product:nth-child(1) .product-img {
+  background-image: url("./images/item1.png");
+}
+.product:nth-child(2) .product-img {
+  background-image: url("./images/item2.png");
+}
+.product:nth-child(3) .product-img {
+  background-image: url("./images/item3.png");
+}
+.product:nth-child(4) .product-img {
+  background-image: url("./images/item4.png");
+}
+.product:nth-child(5) .product-img {
+  background-image: url("./images/item5.png");
+}
+.product:nth-child(6) .product-img {
+  background-image: url("./images/item6.png");
+}
+.product:nth-child(7) .product-img {
+  background-image: url("./images/item7.png");
+}
+.product:nth-child(8) .product-img {
+  background-image: url("./images/item8.png");
+}
+.product:nth-child(9) .product-img {
+  background-image: url("./images/item9.png");
+}
+.product:nth-child(10) .product-img {
+  background-image: url("./images/item10.png");
+}
+.product:nth-child(11) .product-img {
+  background-image: url("./images/item11.png");
+}
+.product:nth-child(12) .product-img {
+  background-image: url("./images/item12.png");
+}
+
+
+    .cart-icon {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.2);
+      background: rgba(255,255,255,0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .product:hover .product-img {
+      transform: scale(1.03);
+    }
+
+    .product:hover .cart-icon {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .product-body {
+      padding: 14px 14px 16px;
+      font-size: 13px;
+    }
+
+    .product-body .title {
+      margin-bottom: 8px;
+      color: #222;
+      min-height: 36px;
+    }
+
+    .price {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .old {
+      font-size: 12px;
+      color: #999;
+      text-decoration: line-through;
+    }
+
+    .sale {
+      font-size: 13px;
+      color: #d54b3d;
+    }
+
+    .sale span {
+      margin-left: 4px;
+      color: #111;
+    }
+
+    .tag {
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      background: #000;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 6px;
+    }
+
+    .arrow.small {
+      top: 50%;
+      transform: translateY(-50%);
+      background: #fff;
+    }
+
+    .arrow.small.left { left: -8px; }
+    .arrow.small.right { right: -8px; }
+
+    /* BRAND STORY */
+    .brand-story {
+      max-width: var(--max-width);
+      margin: 80px auto 60px;
+      padding: 0 24px;
+    }
+
+    .brand-story h2 {
+      font-size: 18px;
+      letter-spacing: 0.12em;
+      margin-bottom: 20px;
+    }
+
+    /* ★★★ 브랜드 스토리 큰 이미지 넣는 위치 ★★★ */
+    .brand-visual {
+      position: relative;
+      width: 100%;
+      padding-top: 36%;
+      border-radius: 4px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      background-color: #144a46; /* 기본 녹색 배경 */
+
+      /* ▼ 브랜드 스토리 배경 이미지 ▼ */
+      /* background-image: url("img/brand.jpg"); */
+    }
+
+    .brand-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 24px;
+      letter-spacing: 0.16em;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: #f5f5f5;
+      padding: 40px 24px 60px;
+      margin-top: 40px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 32px;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+
+    .f-logo {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      margin-bottom: 8px;
+    }
+
+    .footer-top h4 {
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .footer-top p { margin-bottom: 4px; }
+
+    .footer-bottom {
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+      line-height: 1.7;
+      font-size: 11px;
+      color: #777;
+    }
+
+    /* TOP BUTTON */
+    .top-btn {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      z-index: 900;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .slide {
+        grid-template-columns: 1.1fr 1fr;
+      }
+      .product {
+        flex: 0 0 calc(50% - 12px); /* 태블릿: 2개 */
+      }
+      .footer-top {
+        grid-template-columns: repeat(2, minmax(0,1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header-inner { padding: 0 12px; }
+      .nav { display: none; } /* 모바일 메뉴는 과제용이면 생략 가능 */
+
+      .main-slider {
+        height: auto;
+      }
+      .slides { height: auto; }
+      .slide {
+        grid-template-columns: 1fr;
+        padding: 32px 16px;
+      }
+
+      .product {
+        flex: 0 0 100%; /* 모바일: 1개 */
+      }
+
+      .search-contents {
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .footer-top {
+        grid-template-columns: 1fr;
+      }
+
+      .brand-text {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">VessoVesso</div>
+
+    <nav class="nav">
+      <ul>
+        <li class="menu-item">
+          제품
+          <div class="mega">
+            <div>
+              <h4>향수 제품</h4>
+              <p>베스트 셀러</p>
+              <p>남성 향수</p>
+              <p>여성 향수</p>
+              <p>유니섹스 향수</p>
+              <p>데일리 향</p>
+              <p>롱래스팅 향</p>
+            </div>
+            <div>
+              <h4>시즌 추천</h4>
+              <p>봄 향수</p>
+              <p>여름 향수</p>
+              <p>가을 향수</p>
+              <p>겨울 향수</p>
+            </div>
+            <div>
+              <h4>라이프스타일</h4>
+              <p>핸드크림</p>
+              <p>바디미스트</p>
+              <p>방향 디퓨저</p>
+              <p>캔들</p>
+            </div>
+          </div>
+        </li>
+
+        <li class="menu-item">
+          기프트
+          <div class="mega">
+            <p>선물세트</p>
+            <p>베스트 조합</p>
+            <p>기념일 추천</p>
+            <p>프리미엄 패키지</p>
+          </div>
+        </li>
+
+        <li class="menu-item">
+          브랜드
+          <div class="mega">
+            <p>브랜드 스토리</p>
+            <p>철학 & 콘셉트</p>
+            <p>조향 과정</p>
+            <p>콜라보레이션</p>
+          </div>
+        </li>
+
+        <li class="menu-item">고객센터</li>
+      </ul>
+    </nav>
+
+    <div class="icons">
+      <span id="openSearch">🔍</span>
+      <span>🛒</span>
+      <span>이벤트</span>
+      <span>로그인</span>
+    </div>
+  </div>
+</header>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <input type="text" placeholder="검색어를 입력하세요" />
+    <span class="close-search" id="closeSearch">✕</span>
+  </div>
+
+  <div class="search-contents">
+    <div>
+      <h3>추천 검색어</h3>
+      <ol>
+        <li>시그니처 오 드 퍼퓸</li>
+        <li>화이트 플로럴</li>
+        <li>포레스트 머스크</li>
+        <li>앰버 버치 에디션</li>
+        <li>오션 딥 블루</li>
+      </ol>
+    </div>
+
+    <div>
+      <h3>최근 검색어</h3>
+      <p>최근 검색어가 없습니다.</p>
+    </div>
+  </div>
+</div>
+
+
+  <main>
+    <main>
+      <!-- MAIN SLIDER -->
+      <section class="main-slider">
+        <div class="slides" id="heroTrack">
+    
+          <!-- Slide 1 -->
+          <div class="slide">
+            <div class="text-area">
+              <p class="date">12.01 - 12.31</p>
+              <h2>홀리데이 리미티드 출시<br>올겨울을 위한 단 하나의 향</h2>
+              <p class="desc">따뜻한 우디 & 스파이시 노트로 완성한 겨울 한정 에디션.</p>
+              <a class="btn">제품 보기</a>
+            </div>
+            <div class="hero-image"></div>
+          </div>
+    
+          <!-- Slide 2 -->
+          <div class="slide">
+            <div class="text-area">
+              <p class="date">11.20 - 12.15</p>
+              <h2>VessoVesso 시그니처 컬렉션</h2>
+              <p class="desc">브랜드의 감성을 그대로 담은 대표 향수 3종.</p>
+              <a class="btn">베스트 셀러 보기</a>
+            </div>
+            <div class="hero-image"></div>
+          </div>
+    
+          <!-- Slide 3 -->
+          <div class="slide">
+            <div class="text-area">
+              <p class="date">11.01 - 12.31</p>
+              <h2>퍼퓸 레이어링 가이드</h2>
+              <p class="desc">니가 좋아하는 향을 더 깊고 특별하게 만드는 방법.</p>
+              <a class="btn">자세히 보기</a>
+            </div>
+            <div class="hero-image"></div>
+          </div>
+    
+          <!-- Slide 4 -->
+          <div class="slide">
+            <div class="text-area">
+              <p class="date">12.05 - 12.25</p>
+              <h2>연말 감사 이벤트<br>최대 20% 할인 + GIFT 패키지</h2>
+              <p class="desc">소중한 사람에게 향으로 마음을 전하세요.</p>
+              <a class="btn">이벤트 보기</a>
+            </div>
+            <div class="hero-image"></div>
+          </div>
+    
+        </div>
+    
+        <div class="arrow left" id="prevSlide">〈</div>
+        <div class="arrow right" id="nextSlide">〉</div>
+      </section>
+    </main>
+    
+
+    <!-- BEST & NEW -->
+    <section class="best-new">
+      <div class="section-title">
+        <h2>BEST & NEW</h2>
+        <a href="#">전체 보기</a>
+      </div>
+
+      <div class="product-slider-wrapper">
+      <!-- BEST & NEW 본문 안 PRODUCT TRACK 교체 -->
+      <div class="product-track" id="productTrack">
+
+        <!-- 1 : 10% 할인 -->
+        <a href="product-detail.html?item=1" class="product">
+          <div class="product-top">
+            <div class="product-img"></div>
+            <div class="cart-icon">🛒</div>
+          </div>
+          <div class="product-body">
+            <p class="title">VessoVesso 시그니처 오 드 퍼퓸</p>
+            <p class="old">78,000원</p>
+            <p class="sale">10% <span>70,200원</span></p>
+          </div>
+        </a>
+      
+        <!-- 2 -->
+        <a href="product-detail.html?item=2" class="product">
+          <div class="product-top"><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">포레스트 머스크 블렌드</p>
+            <p class="price">69,000원</p>
+          </div>
+        </a>
+      
+        <!-- 3 -->
+        <a href="product-detail.html?item=3" class="product">
+          <div class="product-top"><span class="tag">NEW</span><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">화이트 플로럴 오 드 퍼퓸</p>
+            <p class="price">58,000원</p>
+          </div>
+        </a>
+      
+        <!-- 4 : 20% 할인 -->
+        <a href="product-detail.html?item=4" class="product">
+          <div class="product-top"><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">시트러스 우디 노트</p>
+            <p class="old">62,000원</p>
+            <p class="sale">20% <span>49,600원</span></p>
+          </div>
+        </a>
+      
+        <!-- 5 : 10% 할인 -->
+        <a href="product-detail.html?item=5" class="product">
+          <div class="product-top"><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">앰버 버치 스페셜 에디션</p>
+            <p class="old">80,000원</p>
+            <p class="sale">10% <span>72,000원</span></p>
+          </div>
+        </a>
+      
+        <!-- 6 -->
+        <a href="product-detail.html?item=6" class="product">
+          <div class="product-top"><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">그린 피그먼트 오 드 퍼퓸</p>
+            <p class="price">57,000원</p>
+          </div>
+        </a>
+      
+        <!-- 7 -->
+        <a href="product-detail.html?item=7" class="product">
+          <div class="product-top"><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">어반 머스크 50ml</p>
+            <p class="price">48,000원</p>
+          </div>
+        </a>
+      
+        <!-- 8 -->
+        <a href="product-detail.html?item=8" class="product">
+          <div class="product-top"><span class="tag">NEW</span><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">샌달우드 크림 스킨 향</p>
+            <p class="price">44,000원</p>
+          </div>
+        </a>
+      
+        <!-- 9 -->
+        <a href="product-detail.html?item=9" class="product">
+          <div class="product-top"><span class="tag">NEW</span><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">오션 딥 블루 오 드 퍼퓸</p>
+            <p class="price">52,000원</p>
+          </div>
+        </a>
+      
+        <!-- 10 : 15% 할인 -->
+        <a href="product-detail.html?item=10" class="product">
+          <div class="product-top"><span class="tag">NEW</span><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">스파이시 로즈 50ml</p>
+            <p class="old">61,000원</p>
+            <p class="sale">15% <span>51,850원</span></p>
+          </div>
+        </a>
+      
+        <!-- 11 -->
+        <a href="product-detail.html?item=11" class="product">
+          <div class="product-top"><span class="tag">NEW</span><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">베르가못 크러쉬 30ml</p>
+            <p class="price">38,000원</p>
+          </div>
+        </a>
+      
+        <!-- 12 -->
+        <a href="product-detail.html?item=12" class="product">
+          <div class="product-top"><span class="tag">NEW</span><div class="product-img"></div><div class="cart-icon">🛒</div></div>
+          <div class="product-body">
+            <p class="title">스위트 라일락 프레쉬 오 드 퍼퓸</p>
+            <p class="price">42,000원</p>
+          </div>
+        </a>
+      
+      </div>
+      
+      
+      
+
+
+        <div class="arrow small left" id="prevProduct">〈</div>
+        <div class="arrow small right" id="nextProduct">〉</div>
+      </div>
+    </section>
+
+    <!-- BRAND STORY -->
+    <section class="brand-story">
+      <h2>BRAND STORY</h2>
+      <div class="brand-visual">
+        <div class="brand-text">VessoVesso</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="f-logo">VessoVesso</div>
+          <p>고객 상담 센터 / 주문배송 문의</p>
+          <p>010-1111-2222</p>
+          <p>Waso@Vesso.com</p>
+          <p>평일 09:00 - 18:00 (점심 12:00 - 13:00)</p>
+        </div>
+        <div>
+          <h4>회원 혜택</h4>
+          <p>1:1 문의</p>
+          <p>VessoVesso 멤버십 혜택</p>
+          <p>포인트 추후 적립</p>
+          <br>
+          <h4>소셜 미디어</h4>
+          <p>카카오톡 플러스친구</p>
+          <p>인스타그램</p>
+          <p>유튜브</p>
+        </div>
+        <div>
+          <h4>공지사항</h4>
+          <p>개인정보처리방침 변경 안내</p>
+          <p>쿠폰 행사 및 소비자가 조정 안내</p>
+          <p>더 보기</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>회사소개 | 서비스 이용약관 | <strong>개인정보 처리방침</strong> | 영상정보 처리기기 운영관리 방침 | 전자공고</p>
+        <p>㈜VessoVesso | 대표이사: 홍길동 | 주소: WasoVesso(와쏘베쏘)</p>
+        <p>사업자등록번호: 000-111-11111 | 통신판매업신고번호: WasoVesso(와쏘베쏘)</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TOP BUTTON -->
+  <div class="top-btn" id="topBtn">↑</div>
+
+  <script>
+    // 검색 오버레이
+    const searchOverlay = document.getElementById("searchOverlay");
+    const openSearch = document.getElementById("openSearch");
+    const closeSearch = document.getElementById("closeSearch");
+
+    openSearch.addEventListener("click", () => {
+      searchOverlay.classList.add("open");
+    });
+
+    closeSearch.addEventListener("click", () => {
+      searchOverlay.classList.remove("open");
+    });
+
+    // 메인 슬라이더
+    const heroTrack = document.getElementById("heroTrack");
+    const heroSlides = document.querySelectorAll(".main-slider .slide");
+    const prevSlideBtn = document.getElementById("prevSlide");
+    const nextSlideBtn = document.getElementById("nextSlide");
+
+    let heroIndex = 0;
+    const heroCount = heroSlides.length;
+
+    function goHero(index) {
+      heroIndex = (index + heroCount) % heroCount;
+      heroTrack.style.transform = `translateX(-${heroIndex * 100}%)`;
+    }
+
+    prevSlideBtn.addEventListener("click", () => {
+      goHero(heroIndex - 1);
+      resetHeroTimer();
+    });
+
+    nextSlideBtn.addEventListener("click", () => {
+      goHero(heroIndex + 1);
+      resetHeroTimer();
+    });
+
+    let heroTimer = setInterval(() => {
+      goHero(heroIndex + 1);
+    }, 3000);
+
+    function resetHeroTimer() {
+      clearInterval(heroTimer);
+      heroTimer = setInterval(() => {
+        goHero(heroIndex + 1);
+      }, 3000);
+    }
+
+    // BEST & NEW 슬라이더
+    const productTrack = document.getElementById("productTrack");
+    const productItems = document.querySelectorAll(".product");
+    const prevProductBtn = document.getElementById("prevProduct");
+    const nextProductBtn = document.getElementById("nextProduct");
+
+    let productIndex = 0;
+
+    function getVisibleCount() {
+      const width = window.innerWidth;
+      if (width <= 768) return 1;
+      if (width <= 1024) return 2;
+      return 4;
+    }
+
+    function goProduct(index) {
+      const visible = getVisibleCount();
+      const total = productItems.length;
+      const maxIndex = Math.max(0, total - visible);
+
+      productIndex = index;
+      if (productIndex < 0) productIndex = maxIndex;
+      if (productIndex > maxIndex) productIndex = 0;
+
+      const itemWidth = productItems[0].getBoundingClientRect().width + 24; // gap 포함
+      productTrack.style.transform = `translateX(-${productIndex * itemWidth}px)`;
+    }
+
+    prevProductBtn.addEventListener("click", () => {
+      goProduct(productIndex - 1);
+      resetProductTimer();
+    });
+
+    nextProductBtn.addEventListener("click", () => {
+      goProduct(productIndex + 1);
+      resetProductTimer();
+    });
+
+    let productTimer = setInterval(() => {
+      goProduct(productIndex + 1);
+    }, 3000);
+
+    function resetProductTimer() {
+      clearInterval(productTimer);
+      productTimer = setInterval(() => {
+        goProduct(productIndex + 1);
+      }, 3000);
+    }
+
+    window.addEventListener("resize", () => {
+      goProduct(productIndex);
+    });
+
+    // TOP 버튼
+    const topBtn = document.getElementById("topBtn");
+    topBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
